@@ -6,6 +6,17 @@ class Solution:
                 return True
             seen.add(num)
         return False
+        
+        # count = {}
+        # for num in nums:
+        #     if num not in count:
+        #         count[num] =1
+        #     else:
+        #         count[num] +=1
+        #         return True
+        # return False
+
+            
 
 
 if __name__ == "__main__":

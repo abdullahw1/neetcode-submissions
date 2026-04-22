@@ -4,6 +4,9 @@
 **Pattern:** Hash Set / Frequency Check
 
 ---
+## Neetcode problem
+Given an integer array nums, return `true` if any value appears more than once in the array, otherwise return `false`.
+
 
 ## Problem (In My Own Words)
 
@@ -36,6 +39,12 @@ The key insight: **trading space for time**. We use extra memory (the set)
 to avoid redundant comparisons.
 
 ---
+
+## Dictionary vs Hash set
+
+- A **Set** is designed specifically to handle unique collections and check for membership.
+- A **Dictionary** is designed to map keys to values. Since you don't actually care how many times a number appears (only that it appears more than once), the values in your dictionary are "dead weight."
+
 
 ## Visual Walkthrough
 
@@ -127,4 +136,4 @@ You'll see this same idea in:
 - Longest Substring Without Repeating Characters
 - Group Anagrams
 
-Whenever you see "find duplicates" or "check uniqueness" → think **set**.
+Whenever you see "find duplicates" or "check uniqueness" → think **set**. I chose a set over a dictionary because we only need to track the existence of an element, not its frequency. This makes the code more readable and reduces the memory overhead by avoiding the storage of unnecessary values. Additionally, using a loop allows for an early return, optimizing the best and average-case time performance
