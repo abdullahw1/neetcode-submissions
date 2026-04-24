@@ -78,43 +78,15 @@ count_s == count_t? NO → return False ✅
 
 ---
 
-## Your Solution (Hash Map — Manual Counting)
+## Solution 1: Hash Map (Best for Interviews) ⭐
 
 ```python
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        count_s = {}
-        count_t = {}
-
-        for char in s:
-            if char not in count_s:
-                count_s[char] = 1
-            else:
-                count_s[char] += 1
-
-        for char in t:
-            if char not in count_t:
-                count_t[char] = 1
-            else:
-                count_t[char] += 1
-
-        return count_s == count_t
-```
-
-This works and is totally valid for an interview. You're manually building frequency maps and comparing them.
-
----
-
-## Cleaner Version (Same Idea, Less Code)
-
-```python
-class Solution:
-    def isAnagram(self, s: str, t: str) -> bool:
-        if len(s) != len(t):       # quick exit — different lengths can't be anagrams
+        if len(s) != len(t):       # different lengths → can't be anagrams
             return False
 
-        count_s = {}
-        count_t = {}
+        count_s, count_t = {}, {}
 
         for i in range(len(s)):    # single loop since lengths are equal
             count_s[s[i]] = count_s.get(s[i], 0) + 1
@@ -123,42 +95,93 @@ class Solution:
         return count_s == count_t
 ```
 
-**Why this is better for interviews:**
-- The `len` check at the top is an instant O(1) short-circuit — interviewers love seeing you handle the obvious case first
-- `.get(key, 0)` replaces the if/else block — shows you know Python idioms
-- Single loop instead of two — same time complexity but cleaner to read and write on a whiteboard
+| Pros | Cons |
+|---|---|
+| O(n) time — one pass through both strings | Uses O(1) space (at most 26 keys) but still a hash map |
+| `len` check short-circuits immediately | Two dictionaries (could use one — see Solution 2) |
+| `.get(key, 0)` is clean Python | |
+| **Easy to explain, easy to write on a whiteboard** | |
 
 ---
 
-## Brute Force (Sorting)
+## Solution 2: Character Frequency Array (Most Optimal) 🧠
 
 ```python
 class Solution:
     def isAnagram(self, s: str, t: str) -> bool:
-        return sorted(s) == sorted(t)
+        if len(s) != len(t):
+            return False
+
+        count = [0] * 26                          # 26 slots for a-z
+        for i in range(len(s)):
+            count[ord(s[i]) - ord('a')] += 1      # s increments
+            count[ord(t[i]) - ord('a')] -= 1      # t decrements
+
+        for val in count:
+            if val != 0:                           # any imbalance = not anagram
+                return False
+        return True
 ```
 
-One-liner, easy to remember. But interviewers will ask you to do better because sorting is O(n log n).
+**How it works:** Instead of two dictionaries, use one array of 26 zeros. For each character in `s`, add 1. For each character in `t`, subtract 1. If they're anagrams, every slot ends at 0 — every increment was perfectly cancelled by a decrement.
+
+| Pros | Cons |
+|---|---|
+| Single array instead of two hash maps | Only works for lowercase a-z (fixed character set) |
+| No hashing overhead — pure array indexing | `ord()` math is slightly less readable |
+| Technically the fastest approach | Harder to extend to Unicode/mixed case |
+| Great follow-up answer if interviewer pushes | |
 
 ---
 
-## Complexity Analysis
+## Solution 3: Sorting (Brute Force)
 
-| Approach | Time | Space | Notes |
+```python
+class Solution:
+    def isAnagram(self, s: str, t: str) -> bool:
+        if len(s) != len(t):
+            return False
+        return sorted(s) == sorted(t)
+```
+
+| Pros | Cons |
+|---|---|
+| One-liner, dead simple | O(n log n) — sorting is the bottleneck |
+| Easy to remember under pressure | Interviewer will say "can you do better?" |
+| Good starting point to mention | Creates new sorted lists (extra space) |
+
+Use this as your "here's the obvious approach" then upgrade to the hash map.
+
+---
+
+## All Three Compared
+
+| Approach | Time | Space | When to use |
 |---|---|---|---|
-| **Hash map (your solution)** | **O(n)** | **O(n)** | **Optimal — use this in interviews** |
-| Sorting | O(n log n) | O(n) | Simple but slower |
+| Sorting | O(n log n) | O(n) | Mention as brute force, then improve |
+| **Hash Map** | **O(n)** | **O(1)** | **Default interview answer** |
+| Frequency Array | O(n) | O(1) | Follow-up if they want you to optimize further |
 
-Where n = length of the strings.
+Space is O(1) for both hash map and array because there are at most 26 lowercase letters — the space doesn't grow with input size.
+
+---
+
+## Interview Strategy
+
+1. **Start** by mentioning sorting — "I could sort both and compare, but that's O(n log n)"
+2. **Present** the hash map solution — clean, optimal, easy to explain
+3. **If they push** for more optimization, mention the frequency array — "since we know it's only lowercase a-z, I can use a fixed array of 26 and avoid hashing entirely"
+
+This shows you can think through trade-offs, which is what they're really testing.
 
 ---
 
 ## Gotchas & Edge Cases
 
-- **Different lengths** → immediately `False`, no need to count anything
+- **Different lengths** → immediately `False`, no need to count anything. Always check this first.
 - **Empty strings** → two empty strings are anagrams (`"" == ""`)
 - **Single character** → `"a"` and `"a"` → `True`, `"a"` and `"b"` → `False`
-- **Case sensitivity** — this problem assumes same case. In a real interview, ask!
+- **Case sensitivity** — this problem assumes same case. In a real interview, ask! "Should I treat 'A' and 'a' as the same?"
 
 ---
 
